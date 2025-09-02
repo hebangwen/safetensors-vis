@@ -37,7 +37,7 @@ const Index = () => {
     try {
       const parsed = parseHuggingFaceUrl(repoUrl);
       if (!parsed) {
-        throw new Error('无效的 HuggingFace 仓库 URL');
+        throw new Error('Invalid HuggingFace URL');
       }
       
       const { owner, repo, path } = parsed;
@@ -106,14 +106,14 @@ const Index = () => {
             }))
           });
         } catch (error) {
-          console.error(`处理文件 ${file.rfilename} 时出错:`, error);
+          console.error(`Error processing file ${file.rfilename}:`, error);
         }
       }
       
       setTreeData(treeItems);
       setTotalParams(totalParams);
     } catch (error) {
-      console.error('获取模型信息时出错:', error);
+      console.error('Error fetching model information:', error);
     } finally {
       setLoading(false);
     }
@@ -150,21 +150,21 @@ const Index = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">HuggingFace 模型参数统计</h1>
-          <p className="text-gray-600">输入 HuggingFace 模型仓库 URL，分析 safetensors 文件参数量</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">HuggingFace Model Parameter Statistics</h1>
+          <p className="text-gray-600">Enter the HuggingFace model repository URL to analyze the parameters of safetensors files</p>
         </div>
         
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Database className="mr-2 h-5 w-5" />
-              模型仓库信息
+              Model Repository Information
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex gap-4">
               <Input
-                placeholder="输入 HuggingFace 模型仓库 URL，例如: https://huggingface.co/meta-llama/Llama-2-7b"
+                placeholder="Enter HuggingFace model repository URL, e.g., https://huggingface.co/meta-llama/Llama-2-7b"
                 value={repoUrl}
                 onChange={(e) => setRepoUrl(e.target.value)}
                 className="flex-1"
@@ -177,9 +177,9 @@ const Index = () => {
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    分析中...
+                    Analyzing...
                   </>
-                ) : '分析模型'}
+                ) : 'Analyze Model'}
               </Button>
             </div>
           </CardContent>
@@ -188,11 +188,11 @@ const Index = () => {
         {totalParams > 0 && (
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>模型参数统计</CardTitle>
+              <CardTitle>Model Parameter Statistics</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">
-                总参数量: {formatNumber(totalParams)}
+                Total Parameters: {formatNumber(totalParams)}
               </div>
             </CardContent>
           </Card>
@@ -201,7 +201,7 @@ const Index = () => {
         {treeData.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>模型文件详情</CardTitle>
+              <CardTitle>Model File Details</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -210,7 +210,7 @@ const Index = () => {
                     <div className="font-medium text-lg mb-2">
                       {file.name} 
                       <span className="text-sm font-normal text-gray-500 ml-2">
-                        ({formatNumber(file.params)} 参数)
+                        ({formatNumber(file.params)} parameters)
                       </span>
                     </div>
                     <div className="pl-4 border-l-2 border-gray-200">
@@ -220,7 +220,7 @@ const Index = () => {
                           <div className="flex gap-4 text-sm text-gray-500">
                             <span>Shape: [{(tensor.shape || []).join(', ')}]</span>
                             <span>Dtype: {tensor.dtype || 'unknown'}</span>
-                            <span>参数: {formatNumber(tensor.params)}</span>
+                            <span>Param: {formatNumber(tensor.params)}</span>
                           </div>
                         </div>
                       ))}
