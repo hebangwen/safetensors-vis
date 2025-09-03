@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Database } from 'lucide-react';
-
+import { Loader2, ChevronDown, Database, ChevronRight } from 'lucide-react';
 const Index = () => {
   const [repoUrl, setRepoUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [treeData, setTreeData] = useState([]);
   const [totalParams, setTotalParams] = useState(0);
+  const [expandedFiles, setExpandedFiles] = useState({});
 
   const parseHuggingFaceUrl = (url) => {
     // 支持多种 HuggingFace URL 格式
@@ -146,6 +146,13 @@ const Index = () => {
     return num.toString();
   };
 
+  const toggleFileExpansion = (fileId) => {
+    setExpandedFiles(prev => ({
+      ...prev,
+      [fileId]: !prev[fileId]
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
@@ -206,25 +213,36 @@ const Index = () => {
             <CardContent>
               <div className="space-y-4">
                 {treeData.map((file) => (
-                  <div key={file.id} className="border rounded-lg p-4">
-                    <div className="font-medium text-lg mb-2">
-                      {file.name} 
-                      <span className="text-sm font-normal text-gray-500 ml-2">
-                        ({formatNumber(file.params)} parameters)
-                      </span>
+                  <div key={file.id} className="border rounded-lg">
+                    <div 
+                      className="font-medium text-lg p-4 flex justify-between items-center cursor-pointer hover:bg-gray-50"
+                      onClick={() => toggleFileExpansion(file.id)}
+                    >
+                      <div>
+                        {expandedFiles[file.id] ? 
+                          <ChevronDown className="inline mr-2 h-4 w-4" /> : 
+                          <ChevronRight className="inline mr-2 h-4 w-4" />
+                        }
+                        {file.name} 
+                        <span className="text-sm font-normal text-gray-500 ml-2">
+                          ({formatNumber(file.params)} Parameter)
+                        </span>
+                      </div>
                     </div>
-                    <div className="pl-4 border-l-2 border-gray-200">
-                      {file.children && file.children.map((tensor) => (
-                        <div key={tensor.id} className="py-2 flex justify-between items-center border-b border-gray-100">
-                          <div className="font-mono text-sm">{tensor.name}</div>
-                          <div className="flex gap-4 text-sm text-gray-500">
-                            <span>Shape: [{(tensor.shape || []).join(', ')}]</span>
-                            <span>Dtype: {tensor.dtype || 'unknown'}</span>
-                            <span>Param: {formatNumber(tensor.params)}</span>
+                    {expandedFiles[file.id] && (
+                      <div className="pl-8 pr-4 pb-4 -mt-2 border-l-2 border-gray-200">
+                        {file.children && file.children.map((tensor) => (
+                          <div key={tensor.id} className="py-2 flex justify-between items-center border-b border-gray-100">
+                            <div className="font-mono text-sm">{tensor.name}</div>
+                            <div className="flex gap-4 text-sm text-gray-500">
+                              <span>Shape: [{(tensor.shape || []).join(', ')}]</span>
+                              <span>Dtype: {tensor.dtype || 'unknown'}</span>
+                              <span>Param: {formatNumber(tensor.params)}</span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
